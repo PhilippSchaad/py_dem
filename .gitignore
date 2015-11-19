@@ -1,0 +1,2 @@
+# Ignore all vim temporary files.
+*.swp
