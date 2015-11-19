@@ -14,11 +14,6 @@ from gi.repository import Gtk
 # Main application class.
 class HelloWorld:
 
-    # Callback method, prints to console.
-    def hello(self, widget, data=None):
-        # Simply print out a console message.
-        print("Hello World")
-
     # Callback for the delete-event. Propagate it, without action.
     def delete_event(self, widget, event, data=None):
         # Allow propagation of delete event to destroy.
@@ -49,7 +44,9 @@ class HelloWorld:
 
         # Set up the hello-world button.
         self.hello_button = Gtk.Button("Hi!")
-        self.hello_button.connect("clicked", self.hello, None)
+        self.hello_button.connect(
+                "clicked", lambda widget, data : print("Hello World!"), 
+                None)
 
         # Set up the quit button.
         self.quit_button = Gtk.Button("Quit")
