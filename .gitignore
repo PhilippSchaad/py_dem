@@ -1,2 +1,5 @@
 # Ignore all vim temporary files.
 *.swp
+
+# Ignore idea-project folder.
+.idea/

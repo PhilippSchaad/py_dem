@@ -8,10 +8,8 @@
 # Copyright: *LICENSE.txt*             #
 # ------------------------------------ #
 
-import sys
-import string
-
 from gi.repository import Gtk
+
 
 # Main application class.
 class HelloWorld:
@@ -29,7 +27,7 @@ class HelloWorld:
     # Callback for the window destroy event.
     def destroy(self, widget, data=None):
         # Exit the Application.
-        Gtk.main_quit();
+        Gtk.main_quit()
 
     # Callback for the popup event.
     def open_popup(self, widget, data=None):
@@ -39,7 +37,6 @@ class HelloWorld:
     def __init__(self):
         # Initialize the main application window.
         self.main_window = Gtk.Window()
-        self.main_window.connect("delete_event", self.delete_event)
         self.main_window.connect("destroy", self.destroy)
         self.main_window.set_title("Sample GTK Application")
         self.main_window.set_border_width(10)
