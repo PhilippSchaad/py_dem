@@ -13,6 +13,9 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
+import board
+import ai
+
 import sys
 
 
@@ -21,6 +24,7 @@ class BattleshipsApplication:
 
     # Application setup method.
     def setup(self):
+        self.n_players = get_players()
         print(self.has_gui)
 
     # Object creation method for the Battleships class.
@@ -30,6 +34,20 @@ class BattleshipsApplication:
         else:
             self.has_gui = "We do NOT have gui!"
 
+
+# ========================================== #
+
+# Ask the user for the number of players.
+def get_players():
+    while True:
+        try:
+            n_in = int(input("Number of players (1/2): "))
+            if n_in == 1 or n_in == 2:
+                return n_in
+            else:
+                raise ValueError
+        except ValueError:
+            print("Please enter a valid numerical value.")
 
 # ========================================== #
 

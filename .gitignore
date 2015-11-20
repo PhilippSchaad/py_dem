@@ -3,3 +3,6 @@
 
 # Ignore idea-project folder.
 .idea/
+
+# Ignore python cached bytecode files.
+__pycache__
