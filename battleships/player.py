@@ -15,6 +15,8 @@
 import ship
 import board
 
+from time import sleep
+
 
 # Player-Class.
 class Player:
@@ -28,8 +30,55 @@ class Player:
                 break
         return has_floating_ship
 
+    # Ask the player where to fire his next shot.
+    def get_target(self, next_player):
+        x = y = -1
+        while True:
+            raw_in = input("Enter a target [Column] [Row] (Eg: D 7) >> ")
+            arg_in = raw_in.split()
+            if len(arg_in) == 2:
+                # Check first argument validity.
+                try:
+                    x = board.col_lookup(arg_in[0])
+                except ValueError:
+                    print("Please enter a valid column!")
+                    continue
+
+                # Check second argument validity.
+                try:
+                    y = int(arg_in[1])
+                    if not 0 <= y <= 9:
+                        raise ValueError
+                except ValueError:
+                    print("Please enter a valid row!")
+                    continue
+
+                # Check if this position has been shot before.
+                if self.tracking_board.coord[x][y] != 0:
+                    print("You have shot this spot before!")
+                else:
+                    break
+            else:
+                print("Please use the format '[Column] [Row]'!")
+
+        # Check if the shot results in a hit or not.
+        has_hit = False
+        for s in next_player.ships:
+            if s.intercept(x, y):
+                s.add_damage()
+                has_hit = True
+                break
+        if has_hit:
+            print("Hit!")
+            self.tracking_board.coord[x][y] = \
+                next_player.own_board.coord[x][y] = 2
+        else:
+            print("Miss!")
+            self.tracking_board.coord[x][y] \
+                = next_player.own_board.coord[x][y] = 3
+
     # Take a turn.
-    def take_turn(self):
+    def take_turn(self, next_player):
         print("================================================")
         print("=================== Player", self.player_id, "===================")
         print("================================================")
@@ -54,9 +103,9 @@ class Player:
             print(i, "|", sep="", end="")
             for j in range(10):
                 placeholder = " "
-                if self.own_board.coord[j][i] == 2:
+                if self.tracking_board.coord[j][i] == 2:
                     placeholder = "x"
-                elif self.own_board.coord[j][i] == 3:
+                elif self.tracking_board.coord[j][i] == 3:
                     placeholder = "*"
                 print(placeholder, "|", sep="", end="")
             print("")
@@ -67,7 +116,9 @@ class Player:
         print("* - Missed shot        []")
         print("                       []")
         print("------------------------------------------------")
-        input("NIY!")
+        self.get_target(next_player)
+        input("Hit ENTER to continue...")
+        pause(3)
         return
 
     # Set the players ships.
@@ -94,8 +145,8 @@ class Player:
                 print("")
 
                 print("Where do you want to place your ", s.name, "?", sep="")
-                pos_in = input("Example: A 8 horizontal  >> ")
-                arg_in = pos_in.split()
+                raw_in = input("Example: A 8 horizontal  >> ")
+                arg_in = raw_in.split()
                 if len(arg_in) == 3:
                     # Check first argument validity.
                     try:
@@ -153,7 +204,7 @@ class Player:
                         print("Fatal error")
                         exit()
                 else:
-                    print("Please use the format '[Column] [Row] [Orientation]!")
+                    print("Please use the format '[Column] [Row] [Orientation]'!")
 
             # Finally place the ship.
             s.place(x, y, o)
@@ -184,3 +235,10 @@ class Player:
                 ship.Ship(2, 'Destroyer', self)
                 ]
         return
+
+
+# Helper function. Quickly pause the game for n seconds.
+def pause(n):
+    for i in range(n):
+        print("Next Turn in", n - i, "seconds.")
+        sleep(1)

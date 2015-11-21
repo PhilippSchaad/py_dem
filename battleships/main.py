@@ -40,8 +40,9 @@ class BattleshipsApplication:
 
         # Main game loop.
         while self.running:
-            self.c_player.take_turn()
-            if self.players[(self.turn + 1) % 2].check_vitals():
+            next_player = self.players[(self.turn + 1) % 2]
+            self.c_player.take_turn(next_player)
+            if next_player.check_vitals():
                 self.next_player()
             else:
                 self.running = False
@@ -49,12 +50,6 @@ class BattleshipsApplication:
                 print("================== Game over! ==================")
                 print("================================================")
                 print("Player", self.c_player.player_id, "won the game!")
-
-        # if self.players[0].ships[0].intercept(6, 2):
-        #     print("Hit!")
-        # else:
-        #     print("Miss!")
-        # self.players[0].ships[0].add_damage()
 
     # Switch to the next player. This also prevents the new player
     # from seeing any information about the previous one and vice
@@ -72,7 +67,7 @@ class BattleshipsApplication:
             print("================================================")
             print("Switching players!")
             print("Player, ", self.c_player.player_id, ", are you ready?", sep="")
-            input("Hit enter to confirm")
+            input("Hit ENTER to continue...")
             print("================================================")
             if self.n_players == 2:
                 clear_output()
