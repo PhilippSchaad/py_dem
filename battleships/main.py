@@ -23,17 +23,59 @@ class BattleshipsApplication:
 
     # Application start method.
     def start(self):
-        self.players[0].place_ships()
-        self.players[0].ships[0].place(4, 2, 0)
-        if self.players[0].ships[0].intercept(6, 2):
-            print("Hit!")
+        self.running = True
+        # Assign the first player
+        self.c_player = self.players[self.turn % 2]
+
+        # Let both players place their ships
+        self.c_player.place_ships()
+        self.next_player()
+        self.c_player.place_ships()
+        self.next_player()
+
+        print("================================================")
+        print("================ Game starting! ================")
+        print("================================================")
+        print("")
+
+        # Main game loop.
+        while self.running:
+            self.c_player.take_turn()
+            if self.players[(self.turn + 1) % 2].check_vitals():
+                self.next_player()
+            else:
+                self.running = False
+                print("================================================")
+                print("================== Game over! ==================")
+                print("================================================")
+                print("Player", self.c_player.player_id, "won the game!")
+
+        # if self.players[0].ships[0].intercept(6, 2):
+        #     print("Hit!")
+        # else:
+        #     print("Miss!")
+        # self.players[0].ships[0].add_damage()
+
+    # Switch to the next player. This also prevents the new player
+    # from seeing any information about the previous one and vice
+    # versa, in case 2 human players are playing.
+    def next_player(self):
+        self.turn += 1
+        self.c_player = self.players[self.turn % 2]
+        if self.c_player.is_ai:
+            print("================================================")
+            print("Computer is playing!")
+            print("================================================")
         else:
-            print("Miss!")
-        self.players[0].ships[0].add_damage()
-        self.players[0].ships[0].add_damage()
-        self.players[0].ships[0].add_damage()
-        self.players[0].ships[0].add_damage()
-        self.players[0].ships[0].add_damage()
+            if self.n_players == 2:
+                clear_output()
+            print("================================================")
+            print("Switching players!")
+            print("Player, ", self.c_player.player_id, ", are you ready?", sep="")
+            input("Hit enter to confirm")
+            print("================================================")
+            if self.n_players == 2:
+                clear_output()
 
     # Application setup method.
     def setup(self):
@@ -50,7 +92,10 @@ class BattleshipsApplication:
     # Object creation method for the Battleships class.
     def __init__(self, gui=False):
         self.n_players = 0
-        self.players = [None, None]
+        self.players = None
+        self.turn = 0
+        self.c_player = None
+        self.running = False
 
 # ========================================== #
 
@@ -66,6 +111,12 @@ def get_players():
                 raise ValueError
         except ValueError:
             print("Please enter a valid numerical value.")
+
+
+# Clear the console output py printing 500 new lines.
+def clear_output():
+    for _ in range(500):
+        print("")
 
 # ========================================== #
 
@@ -92,4 +143,3 @@ if __name__ == "__main__":
     # Initialize the application, according to the launch args.
     app.setup()
     app.start()
-

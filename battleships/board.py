@@ -23,10 +23,6 @@ cols = {
 # Board-Class.
 class Board:
 
-    # Set up the board.
-    def setup(self):
-        return
-
     # Object creation method.
     def __init__(self):
         self.width = self.height = 10
@@ -43,4 +39,3 @@ def col_lookup(col):
         return cols[col]
     else:
         raise ValueError
-

@@ -19,6 +19,57 @@ import board
 # Player-Class.
 class Player:
 
+    # Check if the player still is "alive" / has not lost yet.
+    def check_vitals(self):
+        has_floating_ship = False
+        for s in self.ships:
+            if s.lives > 0:
+                has_floating_ship = True
+                break
+        return has_floating_ship
+
+    # Take a turn.
+    def take_turn(self):
+        print("================================================")
+        print("=================== Player", self.player_id, "===================")
+        print("================================================")
+        print("                       []")
+        print("Your Board:            [] Tracking Board:")
+        print("                       []")
+        print(" |A|B|C|D|E|F|G|H|I|J| []  |A|B|C|D|E|F|G|H|I|J|")
+
+        for i in range(10):
+            print(i, "|", sep="", end="")
+            for j in range(10):
+                placeholder = " "
+                if self.own_board.coord[j][i] == 1:
+                    placeholder = "0"
+                elif self.own_board.coord[j][i] == 2:
+                    placeholder = "x"
+                elif self.own_board.coord[j][i] == 3:
+                    placeholder = "*"
+                print(placeholder, "|", sep="", end="")
+            print(" [] ", end="")
+
+            print(i, "|", sep="", end="")
+            for j in range(10):
+                placeholder = " "
+                if self.own_board.coord[j][i] == 2:
+                    placeholder = "x"
+                elif self.own_board.coord[j][i] == 3:
+                    placeholder = "*"
+                print(placeholder, "|", sep="", end="")
+            print("")
+
+        print("                       []")
+        print("0 - Intact ship tile   [] x - Hit!")
+        print("x - Damaged ship tile  [] * - Missed shot")
+        print("* - Missed shot        []")
+        print("                       []")
+        print("------------------------------------------------")
+        input("NIY!")
+        return
+
     # Set the players ships.
     def place_ships(self):
         print("================================================")
@@ -44,18 +95,18 @@ class Player:
 
                 print("Where do you want to place your ", s.name, "?", sep="")
                 pos_in = input("Example: A 8 horizontal  >> ")
-                argin = pos_in.split()
-                if len(argin) == 3:
+                arg_in = pos_in.split()
+                if len(arg_in) == 3:
                     # Check first argument validity.
                     try:
-                        x = board.col_lookup(argin[0])
+                        x = board.col_lookup(arg_in[0])
                     except ValueError:
                         print("Please enter a valid column!")
                         continue
 
                     # Check second argument validity.
                     try:
-                        y = int(argin[1])
+                        y = int(arg_in[1])
                         if not 0 <= y <= 9:
                             raise ValueError
                     except ValueError:
@@ -63,9 +114,9 @@ class Player:
                         continue
 
                     # Check third argument validity.
-                    if argin[2] == "horizontal":
+                    if arg_in[2] == "horizontal":
                         o = 0
-                    elif argin[2] == "vertical":
+                    elif arg_in[2] == "vertical":
                         o = 1
                     else:
                         print("Please enter 'horizontal' or 'vertical' as an orientation!")
@@ -120,9 +171,11 @@ class Player:
         print("\nPlacement completed.\n")
 
     # Object creation method.
-    def __init__(self, num):
+    def __init__(self, num, ai=False):
+        self.is_ai = ai
         self.player_id = num
         self.own_board = board.Board()
+        self.tracking_board = board.Board()
         self.ships = [
                 ship.Ship(5, 'Aircraft Carrier', self),
                 ship.Ship(4, 'Battleship', self),
@@ -131,4 +184,3 @@ class Player:
                 ship.Ship(2, 'Destroyer', self)
                 ]
         return
-

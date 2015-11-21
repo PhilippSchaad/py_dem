@@ -51,4 +51,3 @@ class Ship:
         self.owner = p_owner
         self.name = p_name
         self.x_pos = self.y_pos = self.orientation = -1
-
