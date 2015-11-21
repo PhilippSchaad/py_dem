@@ -6,3 +6,4 @@
 
 # Ignore python cached bytecode files.
 __pycache__
+*.pyc

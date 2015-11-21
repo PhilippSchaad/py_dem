@@ -25,15 +25,10 @@ class BattleshipsApplication:
     # Application setup method.
     def setup(self):
         self.n_players = get_players()
-        print(self.has_gui)
 
     # Object creation method for the Battleships class.
     def __init__(self, gui=False):
-        if gui:
-            self.has_gui = "We have gui!"
-        else:
-            self.has_gui = "We do NOT have gui!"
-
+        return
 
 # ========================================== #
 
@@ -56,7 +51,9 @@ if __name__ == "__main__":
     # Check the launch arguments to see whether the user
     # wants to start a GUI or not.
     if len(sys.argv) == 2 and sys.argv[1] == "--gui":
-        app = BattleshipsApplication(gui=True)
+        print("Gui not implemented yet. Sorry!")
+        exit()
+        #app = BattleshipsApplication(gui=True)
     elif len(sys.argv) > 1:
         print("Invalid arguments")
         exit()
