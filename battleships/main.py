@@ -13,8 +13,7 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import board
-import ai
+import player
 
 import sys
 
@@ -22,15 +21,39 @@ import sys
 # The Application itself.
 class BattleshipsApplication:
 
+    # Application start method.
+    def start(self):
+        self.players[0].place_ships()
+        self.players[0].ships[0].place(4, 2, 0)
+        if self.players[0].ships[0].intercept(6, 2):
+            print("Hit!")
+        else:
+            print("Miss!")
+        self.players[0].ships[0].add_damage()
+        self.players[0].ships[0].add_damage()
+        self.players[0].ships[0].add_damage()
+        self.players[0].ships[0].add_damage()
+        self.players[0].ships[0].add_damage()
+
     # Application setup method.
     def setup(self):
         self.n_players = get_players()
+        if self.n_players == 1:
+            # TODO
+            return
+        else:
+            self.players = [
+                    player.Player(1),
+                    player.Player(2)
+                    ]
 
     # Object creation method for the Battleships class.
     def __init__(self, gui=False):
-        return
+        self.n_players = 0
+        self.players = [None, None]
 
 # ========================================== #
+
 
 # Ask the user for the number of players.
 def get_players():
@@ -48,17 +71,25 @@ def get_players():
 
 # Application entry point.
 if __name__ == "__main__":
+    app = None
     # Check the launch arguments to see whether the user
     # wants to start a GUI or not.
     if len(sys.argv) == 2 and sys.argv[1] == "--gui":
-        print("Gui not implemented yet. Sorry!")
+        print("Gui not implemented. Sorry!")
         exit()
-        #app = BattleshipsApplication(gui=True)
+        # TODO: Implement
+        # app = BattleshipsApplication(gui=True)
     elif len(sys.argv) > 1:
         print("Invalid arguments")
         exit()
     else:
         app = BattleshipsApplication()
+
+    if app is None:
+        print("Fatal Error initializing the application")
+        exit()
     
     # Initialize the application, according to the launch args.
     app.setup()
+    app.start()
+
