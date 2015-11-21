@@ -26,7 +26,6 @@ class Board:
     # Object creation method.
     def __init__(self):
         self.width = self.height = 10
-        self.n_fields = self.width * self.height
 
         # Initialize the Coordinate-System.
         self.coord = \

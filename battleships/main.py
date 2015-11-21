@@ -86,10 +86,8 @@ class BattleshipsApplication:
 
     # Object creation method for the Battleships class.
     def __init__(self, gui=False):
-        self.n_players = 0
-        self.players = None
-        self.turn = 0
-        self.c_player = None
+        self.n_players = self.turn = 0
+        self.players = self.c_player = None
         self.running = False
 
 # ========================================== #
