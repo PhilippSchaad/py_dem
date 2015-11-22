@@ -14,12 +14,13 @@
 
 import ship
 import board
+import util
 
-from time import sleep
+import sys
 
 
 # Player-Class.
-class Player:
+class Player(object):
 
     # Check if the player still is "alive" / has not lost yet.
     def check_vitals(self):
@@ -74,8 +75,8 @@ class Player:
                 next_player.own_board.coord[x][y] = 2
         else:
             print("Miss!")
-            self.tracking_board.coord[x][y] \
-                = next_player.own_board.coord[x][y] = 3
+            self.tracking_board.coord[x][y] = \
+                next_player.own_board.coord[x][y] = 3
 
     # Take a turn.
     def take_turn(self, next_player):
@@ -118,7 +119,7 @@ class Player:
         print("------------------------------------------------")
         self.get_target(next_player)
         input("Hit ENTER to continue...")
-        pause(3)
+        util.pause(3)
         return
 
     # Set the players ships.
@@ -174,35 +175,10 @@ class Player:
                         continue
 
                     # Check if the chosen placement is valid.
-                    if o == 0:
-                        # Ship horizontal.
-                        holds = True
-                        if x + s.size - 1 > 9:
-                            holds = False
-                        else:
-                            for i in range(s.size):
-                                if self.own_board.coord[x + i][y] == 1:
-                                    holds = False
-                        if holds:
-                            break
-                        else:
-                            print("This ship placement is invalid!")
-                    elif o == 1:
-                        # Ship vertical.
-                        holds = True
-                        if y + s.size - 1 > 9:
-                            holds = False
-                        else:
-                            for i in range(s.size):
-                                if self.own_board.coord[x][y + i] == 1:
-                                    holds = False
-                        if holds:
-                            break
-                        else:
-                            print("This ship placement is invalid!")
+                    if self.check_placement(s, x, y, o):
+                        break
                     else:
-                        print("Fatal error")
-                        exit()
+                        print("Invalid placement!")
                 else:
                     print("Please use the format '[Column] [Row] [Orientation]'!")
 
@@ -217,9 +193,44 @@ class Player:
                     # Ship vertical.
                     self.own_board.coord[x][y + i] = 1
                 else:
-                    print("Fatal error")
+                    print("Fatal error: 0x0001",
+                          file=sys.stderr)
                     exit()
+
         print("\nPlacement completed.\n")
+
+    # Check if a chosen ship placement is valid.
+    def check_placement(self, s, x, y, o):
+        if o == 0:
+            # Ship horizontal.
+            holds = True
+            if x + s.size - 1 > 9:
+                holds = False
+            else:
+                for i in range(s.size):
+                    if self.own_board.coord[x + i][y] == 1:
+                        holds = False
+            if holds:
+                return True
+            else:
+                return False
+        elif o == 1:
+            # Ship vertical.
+            holds = True
+            if y + s.size - 1 > 9:
+                holds = False
+            else:
+                for i in range(s.size):
+                    if self.own_board.coord[x][y + i] == 1:
+                        holds = False
+            if holds:
+                return True
+            else:
+                return False
+        else:
+            print("Fatal error: 0x0003",
+                  file=sys.stderr)
+            exit()
 
     # Object creation method.
     def __init__(self, num, ai=False):
@@ -235,10 +246,3 @@ class Player:
                 ship.Ship(2, 'Destroyer', self)
                 ]
         return
-
-
-# Helper function. Quickly pause the game for n seconds.
-def pause(n):
-    for i in range(n):
-        print("Next Turn in", n - i, "seconds.")
-        sleep(1)

@@ -14,6 +14,8 @@
 # ------------------------------------------- #
 
 import player
+import ai
+import util
 
 import sys
 
@@ -63,26 +65,28 @@ class BattleshipsApplication:
             print("================================================")
         else:
             if self.n_players == 2:
-                clear_output()
+                util.clear_output()
             print("================================================")
             print("Switching players!")
             print("Player, ", self.c_player.player_id, ", are you ready?", sep="")
             input("Hit ENTER to continue...")
             print("================================================")
             if self.n_players == 2:
-                clear_output()
+                util.clear_output()
 
     # Application setup method.
     def setup(self):
         self.n_players = get_players()
         if self.n_players == 1:
-            # TODO
-            return
+            self.players = [
+                player.Player(1),
+                ai.AI(2)
+            ]
         else:
             self.players = [
-                    player.Player(1),
-                    player.Player(2)
-                    ]
+                player.Player(1),
+                player.Player(2)
+            ]
 
     # Object creation method for the Battleships class.
     def __init__(self, gui=False):
@@ -105,12 +109,6 @@ def get_players():
         except ValueError:
             print("Please enter a valid numerical value.")
 
-
-# Clear the console output py printing 500 new lines.
-def clear_output():
-    for _ in range(500):
-        print("")
-
 # ========================================== #
 
 # Application entry point.
@@ -130,7 +128,8 @@ if __name__ == "__main__":
         app = BattleshipsApplication()
 
     if app is None:
-        print("Fatal Error initializing the application")
+        print("Fatal Error initializing the application",
+              file=sys.stderr)
         exit()
     
     # Initialize the application, according to the launch args.
