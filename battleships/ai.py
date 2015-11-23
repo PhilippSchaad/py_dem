@@ -29,26 +29,23 @@ class AI(player.Player):
             # Only one hit so far. Do clockwise continuation method.
             h_pos = self.history[-1]
             while True:
+                # Get a new random direction in which to shoot.
                 offset = random.randint(0, 3)
                 if offset == 0:
-                    # Position 1 (left):
+                    # Direction 1 (left):
                     if self.is_valid_pos(h_pos[0] - 1, h_pos[1]):
-                        # Check if shot is valid.
                         return h_pos[0] - 1, h_pos[1]
                 elif offset == 1:
-                    # Position 2 (top):
+                    # Direction 2 (top):
                     if self.is_valid_pos(h_pos[0], h_pos[1] - 1):
-                        # Check if shot is valid.
                         return h_pos[0], h_pos[1] - 1
                 elif offset == 2:
-                    # Position 3 (right):
+                    # Direction 3 (right):
                     if self.is_valid_pos(h_pos[0] + 1, h_pos[1]):
-                        # Check if shot is valid.
                         return h_pos[0] + 1, h_pos[1]
                 else:
-                    # Position 4 (bottom):
+                    # Direction 4 (bottom):
                     if self.is_valid_pos(h_pos[0], h_pos[1] + 1):
-                        # Check if shot is valid.
                         return h_pos[0], h_pos[1] + 1
         elif len(self.history) > 1:
             # Continue in correct direction.
@@ -58,46 +55,59 @@ class AI(player.Player):
             if h_pos_1[0] == h_pos_2[0]:
                 # Both in same column.
                 direction = 0
+                # Get the minimum and maximum x values out of the history.
                 max_pos = max(self.history, key=lambda item: item[1])[1]
                 min_pos = min(self.history, key=lambda item: item[1])[1]
             elif h_pos_1[1] == h_pos_1[1]:
                 # Both in same row.
                 direction = 1
+                # Get the minimum and maximum y values out of the history.
                 max_pos = max(self.history, key=lambda item: item[0])[0]
                 min_pos = min(self.history, key=lambda item: item[0])[0]
             else:
+                # This should never be called!
                 print("Fatal error: 0x0005",
                       file=sys.stderr)
                 exit()
             if max_pos - min_pos > len(self.history) - 1:
                 # There is a "hole" between the hits. Fill it first.
                 while True:
+                    # Get one of the values in the range of the "hole".
                     n_pos = random.randint(min_pos + 1, max_pos - 1)
                     if direction == 0:
+                        # Vertically fill the hole.
                         if self.is_valid_pos(h_pos_1[0], n_pos):
                             return h_pos_1[0], n_pos
                     elif direction == 1:
+                        # Horizontally fill the hole.
                         if self.is_valid_pos(n_pos, h_pos_1[1]):
                             return n_pos, h_pos_1[1]
                     else:
+                        # This should never be called!
                         print("Fatal error: 0x0006",
                               file=sys.stderr)
                         exit()
             else:
                 # Continue by appending shots.
                 while True:
+                    # Decide whether to go left/up or right/down next.
                     n_dir = random.randint(0, 1)
                     if n_dir == 0:
+                        # Goes left/up.
                         n_pos = min_pos - 1
                     else:
+                        # Goes right/down.
                         n_pos = max_pos + 1
                     if direction == 0:
+                        # The ship lies vertical.
                         if self.is_valid_pos(h_pos_1[0], n_pos):
                             return h_pos_1[0], n_pos
                     elif direction == 1:
+                        # The ship lies horizontal.
                         if self.is_valid_pos(n_pos, h_pos_1[1]):
                             return n_pos, h_pos_1[1]
                     else:
+                        # This should never be called!
                         print("Fatal error: 0x0007",
                               file=sys.stderr)
                         exit()
