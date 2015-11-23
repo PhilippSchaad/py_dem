@@ -53,7 +53,7 @@ class AI(player.Player):
         elif len(self.history) > 1:
             # Continue in correct direction.
             h_pos_1 = self.history[-1]
-            h_pos_2 = self.history[-1]
+            h_pos_2 = self.history[-2]
             direction = min_pos = max_pos = -1
             if h_pos_1[0] == h_pos_2[0]:
                 # Both in same column.
