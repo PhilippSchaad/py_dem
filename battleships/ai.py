@@ -132,36 +132,36 @@ class AI(player.Player):
     def take_turn(self, next_player):
         print("\nThe computer is taking a shot...\n")
         x, y = self.get_target(next_player)
-        has_hit = False
-        hit_ship = None
-        for s in next_player.ships:
-            if s.intercept(x, y):
-                hit_ship = s
-                has_hit = True
-                break
-        col = None
+        sleep(1)
+        # Print out the chosen target. (Looks it up in the columns lookup table)
         for i, j in board.cols.items():
             if x == j:
-                col = i
+                print("\nThe computer shoots at", i, y)
                 break
-        sleep(1)
-        print("\nThe computer shoots at", col, y)
-        if has_hit:
-            print("This is a hit!")
-            hit_ship.add_damage()
-            # Clear the history if the ship was sunk.
-            # Otherwise, extend the history.
-            if hit_ship.lives == 0:
-                self.history = []
-            else:
-                self.history.append((x, y))
-            self.tracking_board.coord[x][y] = \
-                next_player.own_board.coord[x][y] = 2
-        else:
-            print("This is a miss...")
-            self.tracking_board.coord[x][y] = \
-                next_player.own_board.coord[x][y] = 3
-        print("\nThe computer's turn is over.\n")
+
+        # Check if the shot results in a hit or not.
+        for s in next_player.ships:
+            if s.intercept(x, y):
+                # We got a hit with ship s.
+                print("This is a hit!")
+                # Mark it on the tracking board.
+                self.tracking_board.coord[x][y] = \
+                    next_player.own_board.coord[x][y] = 2
+                # Add damage to the ship.
+                if s.add_damage():
+                    # If the ship got sunk:
+                    # Clear the history and mark the perimeter.
+                    self.history = []
+                    self.mark_perimeter(s)
+                else:
+                    # Otherwise, extend the history.
+                    self.history.append((x, y))
+                sleep(1)
+                return
+        # If we fall through to here, we got a miss.
+        print("This is a miss...")
+        self.tracking_board.coord[x][y] = \
+            next_player.own_board.coord[x][y] = 3
         sleep(1)
 
     # Let the AI place it's ships.

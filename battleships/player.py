@@ -14,7 +14,6 @@
 
 import ship
 import board
-import util
 
 import sys
 
@@ -24,19 +23,17 @@ class Player(object):
 
     # Check if the player still is "alive" / has not lost yet.
     def check_vitals(self):
-        has_floating_ship = False
         for s in self.ships:
             if s.lives > 0:
-                has_floating_ship = True
-                break
-        return has_floating_ship
+                return True
+        return False
 
     # Ask the player where to fire his next shot.
     def get_target(self, next_player):
         x = y = -1
         while True:
-            raw_in = input("Enter a target [Column] [Row] (Eg: D 7) >> ")
-            arg_in = raw_in.split()
+            # Grab the input from the player and separate the words into an array.
+            arg_in = input("Enter a target [Column] [Row] (Eg: D 7) >> ").split()
             if len(arg_in) == 2:
                 # Check first argument validity.
                 try:
@@ -63,20 +60,40 @@ class Player(object):
                 print("Please use the format '[Column] [Row]'!")
 
         # Check if the shot results in a hit or not.
-        has_hit = False
         for s in next_player.ships:
             if s.intercept(x, y):
-                s.add_damage()
-                has_hit = True
-                break
-        if has_hit:
-            print("Hit!")
-            self.tracking_board.coord[x][y] = \
-                next_player.own_board.coord[x][y] = 2
+                # We got a hit with ship s.
+                print("Hit!")
+                # Mark it on the tracking board.
+                self.tracking_board.coord[x][y] = \
+                    next_player.own_board.coord[x][y] = 2
+                # Add damage to the ship.
+                if s.add_damage():
+                    # If the ship got sunk, mark it's perimeter.
+                    self.mark_perimeter(s)
+                return
+        # If we fall through to here, we got a miss.
+        print("Miss!")
+        # Mark the miss on the tracking board.
+        self.tracking_board.coord[x][y] = \
+            next_player.own_board.coord[x][y] = 3
+
+    # Mark the boundaries of a ship after it has been sunk.
+    def mark_perimeter(self, s):
+        if s.orientation == 0:
+            # Horizontal ship.
+            for i in range(-1, 2):
+                for j in range(-1, s.size + 1):
+                    if 0 <= s.y_pos + i <= 9 and 0 <= s.x_pos + j <= 9:
+                        if self.tracking_board.coord[s.x_pos + j][s.y_pos + i] == 0:
+                            self.tracking_board.coord[s.x_pos + j][s.y_pos + i] = 4
         else:
-            print("Miss!")
-            self.tracking_board.coord[x][y] = \
-                next_player.own_board.coord[x][y] = 3
+            # Vertical ship.
+            for i in range(-1, 2):
+                for j in range(-1, s.size + 1):
+                    if 0 <= s.y_pos + j <= 9 and 0 <= s.x_pos + i <= 9:
+                        if self.tracking_board.coord[s.x_pos + i][s.y_pos + j] == 0:
+                            self.tracking_board.coord[s.x_pos + i][s.y_pos + j] = 4
 
     # Take a turn.
     def take_turn(self, next_player):
@@ -108,18 +125,19 @@ class Player(object):
                     placeholder = "x"
                 elif self.tracking_board.coord[j][i] == 3:
                     placeholder = "*"
+                elif self.tracking_board.coord[j][i] == 4:
+                    placeholder = "~"
                 print(placeholder, "|", sep="", end="")
             print("")
 
         print("                       []")
         print("0 - Intact ship tile   [] x - Hit!")
         print("x - Damaged ship tile  [] * - Missed shot")
-        print("* - Missed shot        []")
+        print("* - Missed shot        [] ~ - Impossible Pos.")
         print("                       []")
         print("------------------------------------------------")
         self.get_target(next_player)
         input("Hit ENTER to continue...")
-        util.pause(3)
         return
 
     # Set the players ships.
@@ -203,34 +221,33 @@ class Player(object):
     def check_placement(self, s, x, y, o):
         if o == 0:
             # Ship horizontal.
-            holds = True
             if x + s.size - 1 > 9:
-                holds = False
-            else:
-                for i in range(s.size):
-                    if self.own_board.coord[x + i][y] == 1:
-                        holds = False
-            if holds:
-                return True
-            else:
+                # Ship violates board-boundaries, invalid placement.
                 return False
+            else:
+                # Check if it overlaps or touches a ship. Return false if yes.
+                for i in range(-1, 2):
+                    for j in range(-1, s.size + 1):
+                        if 0 <= y + i <= 9 and 0 <= x + j <= 9:
+                            if self.own_board.coord[x + j][y + i] == 1:
+                                return False
         elif o == 1:
             # Ship vertical.
-            holds = True
             if y + s.size - 1 > 9:
-                holds = False
-            else:
-                for i in range(s.size):
-                    if self.own_board.coord[x][y + i] == 1:
-                        holds = False
-            if holds:
-                return True
-            else:
+                # Ship violates board-boundaries, invalid placement.
                 return False
+            else:
+                # Check if it overlaps or touches a ship. Return false if yes.
+                for i in range(-1, 2):
+                    for j in range(-1, s.size + 1):
+                        if 0 <= y + j <= 9 and 0 <= x + i <= 9:
+                            if self.own_board.coord[x + i][y + j] == 1:
+                                return False
         else:
             print("Fatal error: 0x0003",
                   file=sys.stderr)
             exit()
+        return True
 
     # Object creation method.
     def __init__(self, num, ai=False):

@@ -38,11 +38,14 @@ class Ship:
         return False
 
     # Add one damage to the ship.
+    # Returns true if the ship has been sunk with this action.
     def add_damage(self):
         self.lives -= 1
         if self.lives <= 0:
             print("Player ", self.owner.player_id, "'s ",
                   self.name, " has been sunk!", sep="")
+            return True
+        return False
 
     # Object creation method.
     def __init__(self, p_size, p_name, p_owner):
