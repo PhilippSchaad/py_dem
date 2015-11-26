@@ -1,3 +1,9 @@
+# Ignore the compilation output. (Binary)
+/battleships/build
+
+# Ignore the cx_freeze file.
+/battleships/setup.py
+
 # Ignore all vim temporary files.
 *.swp
 
@@ -6,4 +12,3 @@
 
 # Ignore python cached bytecode files.
 __pycache__
-*.pyc
