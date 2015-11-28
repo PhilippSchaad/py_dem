@@ -21,7 +21,7 @@ cols = {
 
 
 # Board-Class.
-class Board:
+class Board(object):
 
     # Object creation method.
     def __init__(self):

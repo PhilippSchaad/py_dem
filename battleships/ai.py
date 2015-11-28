@@ -166,7 +166,8 @@ class AI(player.Player):
 
     # Let the AI place it's ships.
     def place_ships(self):
-        print("\nThe computer is placing ships...\n")
+        if self.is_console:
+            print("\nThe computer is placing ships...\n")
         for s in self.ships:
             while True:
                 x = random.randint(0, 9)
@@ -192,11 +193,13 @@ class AI(player.Player):
                           file=sys.stderr)
                     exit()
         sleep(1)
-        print("\nThe computer finished placing his ships.\n")
+        if self.is_console:
+            print("\nThe computer finished placing his ships.\n")
         sleep(1)
 
     # Object creation method.
-    def __init__(self, p_num):
+    def __init__(self, p_num, console=True):
         super(AI, self).__init__(p_num, True)
         random.seed()
         self.history = []
+        self.is_console = console
