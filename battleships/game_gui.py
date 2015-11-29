@@ -21,6 +21,7 @@ import pygame
 # Constants:
 C_BLACK = pygame.Color('black')
 C_WHITE = pygame.Color('white')
+BG_COLOR = pygame.Color('#999999')
 
 
 # The GUI variant of the Application.
@@ -31,6 +32,20 @@ class GuiApplication:
         self.get_players()
         self.get_ship_placement()
 
+        self.window = pygame.display.set_mode((755, 460))
+        self.window.fill(BG_COLOR)
+        self.running = True
+        self.next_player()
+        # Main Game-Loop:
+        while self.running:
+            next_player = self.players[self.turn % 2]
+            self.c_player.take_turn(next_player)
+            if next_player.check_vitals():
+                self.next_player()
+            else:
+                self.running = False
+                # TODO Game over screen.
+
     # Application setup method.
     def setup(self):
         self.clock = pygame.time.Clock()
@@ -39,19 +54,53 @@ class GuiApplication:
         pygame.display.set_caption("Battleships")
         pygame.mouse.set_cursor(*pygame.cursors.diamond)
 
+    # Switch to the next player. This also prevents the new player
+    # from seeing any information about the previous one and vice
+    # versa, in case 2 human players are playing.
+    def next_player(self):
+        self.c_player = self.players[self.turn % 2]
+        self.window.fill(BG_COLOR)
+        if self.c_player.is_ai:
+            Button(self, 202, 200, 350, 40,
+                   "The Computer is taking his turn",
+                   pygame.Color('#00ff00'), pygame.Color('#00ff00')).show(0, 0, (0, 0, 0))
+            pygame.display.update()
+        else:
+            # Check if the player is ready to play.
+            ready_button = Button(self, 247, 205, 260, 50,
+                                  "Player " + str(self.c_player.player_id) + " ready to play",
+                                  pygame.Color('#00ff00'), pygame.Color('#99ff99'),
+                                  self.ready_to_play)
+            while not self.player_ready:
+                click = (0, 0, 0)
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        self.close_app()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        click = (1, 0, 0)
+                    else:
+                        pass
+                mouse_pos = pygame.mouse.get_pos()
+
+                ready_button.show(mouse_pos[0], mouse_pos[1], click)
+
+                pygame.display.update()
+                self.clock.tick(15)
+        self.turn += 1
+
     # Display a single grid to let the player place his ships.
     def get_ship_placement(self):
         for p in self.players:
             if not p.is_ai:
                 self.window = pygame.display.set_mode((570, 460))
-                self.window.fill(pygame.Color('#999999'))
+                self.window.fill(BG_COLOR)
 
                 # Check if the player is ready to place.
                 ready_button = Button(self, 155, 205, 260, 50,
                                       "Player " + str(p.player_id) + " ready to place",
                                       pygame.Color('#00ff00'), pygame.Color('#99ff99'),
-                                      self.ready_to_place)
-                while not self.in_placement:
+                                      self.ready_to_play)
+                while not self.player_ready:
                     click = (0, 0, 0)
                     for event in pygame.event.get():
                         if event.type == pygame.QUIT:
@@ -70,9 +119,9 @@ class GuiApplication:
                 # Do the placement.
                 p.place_ships()
 
-                self.in_placement = False
+                self.player_ready = False
             else:
-                self.window.fill(pygame.Color('#999999'))
+                self.window.fill(BG_COLOR)
                 Button(self, 100, 200, 350, 40,
                        "The Computer is placing his ships",
                        pygame.Color('#00ff00'), pygame.Color('#00ff00')).show(0, 0, (0, 0, 0))
@@ -82,7 +131,7 @@ class GuiApplication:
 
     # Display the player selection mode and get the player number.
     def get_players(self):
-        self.window.fill(pygame.Color('#999999'))
+        self.window.fill(BG_COLOR)
         # Show two buttons, one for 1 player, one for 2 players. Wait for action.
         sp_button = Button(self, 50, 50, 100, 50, "1 Player",
                            pygame.Color('#00ff00'), pygame.Color('#99ff99'),
@@ -131,8 +180,8 @@ class GuiApplication:
     def set_two_players(self):
         self.n_players = 2
 
-    def ready_to_place(self):
-        self.in_placement = not self.in_placement
+    def ready_to_play(self):
+        self.player_ready = not self.player_ready
 
     # Close the application correctly
     @staticmethod
@@ -148,7 +197,7 @@ class GuiApplication:
         self.players = []
         self.c_player = None
         self.window = self.std_font = self.clock = None
-        self.running = self.in_placement = False
+        self.running = self.player_ready = False
 
 
 # Button object class.

@@ -23,11 +23,59 @@ class GuiPlayer(player.Player):
 
     # Override the get-target function.
     def get_target(self, next_player):
-        return
+        x = y = -1
+        while True:
+            self.parent.window.fill(pygame.Color('#999999'))
+            self.parent.window.fill(pygame.Color('#000000'), rect=[375, 0, 5, 460])
+            self.own_board.draw(21, 21)
+            self.tracking_board.draw(396, 21)
+
+            mouse_pos = pygame.mouse.get_pos()
+            board_pos = gui_board.get_coord(396, 21, mouse_pos[0], mouse_pos[1])
+            if board_pos is not None:
+                x = board_pos[0]
+                y = board_pos[1]
+                highlight_color = pygame.Color('#ff0000')
+                if self.tracking_board.coord[x][y] == 0:
+                    highlight_color = pygame.Color('#ffff00')
+                self.tracking_board.highlight(396, 21, x, y, 1, 1, highlight_color)
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    self.parent.close_app()
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if self.tracking_board.coord[x][y] == 0:
+                        for s in next_player.ships:
+                            if s.intercept(x, y):
+                                self.tracking_board.coord[x][y] = \
+                                    next_player.own_board.coord[x][y] = 2
+                                if s.add_damage():
+                                    self.mark_perimeter(s)
+                                return
+                        # If we fall through to here, we got a miss.
+                        self.tracking_board.coord[x][y] = \
+                            next_player.own_board.coord[x][y] = 3
+                        return
+                else:
+                    pass
+
+            pygame.display.update()
+            self.parent.clock.tick(15)
 
     # Override the take-turn function.
     def take_turn(self, next_player):
-        return
+        self.get_target(next_player)
+        self.parent.window.fill(pygame.Color('#999999'))
+        self.parent.window.fill(pygame.Color('#000000'), rect=[375, 0, 5, 460])
+        self.own_board.draw(21, 21)
+        self.tracking_board.draw(396, 21)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.parent.close_app()
+            else:
+                pass
+        pygame.display.update()
+        pygame.time.wait(1000)
 
     # Override the ship placement method.
     def place_ships(self):

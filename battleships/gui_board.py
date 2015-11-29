@@ -75,6 +75,9 @@ class GuiBoard(board.Board):
                 elif self.coord[j][i] == 3:
                     pygame.draw.circle(self.parent.window, pygame.Color('#0000ff'),
                                        (x + 47 + (j * 30), y + 47 + (i * 30)), 10, 5)
+                elif self.coord[j][i] == 4:
+                    pygame.draw.circle(self.parent.window, pygame.Color('#0000ff'),
+                                       (x + 47 + (j * 30), y + 47 + (i * 30)), 5, 5)
 
     # Object creation method.
     def __init__(self, p_parent):
