@@ -1,8 +1,8 @@
 # ------------------------------------------- #
-# File: gui_player.py                         #
+# File: player_gui.py                         #
 # Brief: Player object file for the GUI.      #
 # Author: Philipp Schaad                      #
-# Creation Date: 271115                       #
+# Creation Date: 021215                       #
 # ------------------------------------------- #
 
 # ------------------------------------------- #
@@ -12,14 +12,14 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import gui_board
-import player
+import player_base
+import board_gui
 
 import pygame
 
 
 # Object class.
-class GuiPlayer(player.Player):
+def PlayerGui(player_base.PlayerBase):
 
     # Override the get-target function.
     def get_target(self, next_player):
@@ -137,9 +137,7 @@ class GuiPlayer(player.Player):
                 self.parent.clock.tick(15)
 
     # Object creation method.
-    def __init__(self, p_parent, num, ai=False):
-        super(GuiPlayer, self).__init__(num, ai)
-        self.own_board = gui_board.GuiBoard(p_parent)
-        self.tracking_board = gui_board.GuiBoard(p_parent)
-        self.parent = p_parent
+    def __init__(self, parent, num, ai=False):
+        self.parent = parent;
+        super().__init__(num, ai)
 

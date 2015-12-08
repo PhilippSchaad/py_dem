@@ -12,7 +12,7 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import player
+import player_cons
 import ai
 import util
 
@@ -76,13 +76,13 @@ class ConsoleApplication:
         self.n_players = get_players()
         if self.n_players == 1:
             self.players = [
-                player.Player(1),
+                player_cons.PlayerCons(1),
                 ai.AI(2)
             ]
         else:
             self.players = [
-                player.Player(1),
-                player.Player(2)
+                player_cons.PlayerCons(1),
+                player_cons.PlayerCons(2)
             ]
 
     # Object creation method for the Battleships class.

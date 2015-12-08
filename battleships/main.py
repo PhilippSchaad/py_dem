@@ -25,9 +25,6 @@ if __name__ == "__main__":
     # Check the launch arguments to see whether the user
     # wants to start a GUI or not.
     if len(sys.argv) == 2 and sys.argv[1] == "--gui":
-        # print("Gui not implemented. Sorry!")
-        # exit()
-        # TODO: Implement!
         app = game_gui.GuiApplication()
     elif len(sys.argv) > 1:
         print("Invalid arguments")
