@@ -12,13 +12,13 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import board_base
+import board
 
 import pygame
 
 
 # Gui-Board object class.
-def BoardGUI(board_base.Board):
+class BoardGUI(board.Board):
 
     # Highlight a/some tiles.
     def highlight(self, b_x, b_y, col, row, width, height, color):
@@ -80,7 +80,7 @@ def BoardGUI(board_base.Board):
                                        (x + 47 + (j * 30), y + 47 + (i * 30)), 5, 5)
 
     # Object creation procedure.
-    def __init(self, p_parent):
+    def __init__(self, p_parent):
         super().__init__()
         self.parent = p_parent
 

@@ -12,8 +12,8 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import ai
-import gui_player
+import ai_gui
+import player_gui
 
 import pygame
 
@@ -163,13 +163,13 @@ class GuiApplication:
 
         if self.n_players == 1:
             self.players = [
-                gui_player.GuiPlayer(self, 1),
-                ai.AI(2, console=False)
+                player_gui.PlayerGui(self, 1),
+                ai_gui.AIGui(2)
             ]
         else:
             self.players = [
-                gui_player.GuiPlayer(self, 1),
-                gui_player.GuiPlayer(self, 2)
+                player_gui.PlayerGui(self, 1),
+                player_gui.PlayerGui(self, 2)
             ]
 
     # Set the number of players to be one.

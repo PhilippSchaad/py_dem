@@ -20,7 +20,7 @@ class PlayerBase(object):
     def take_turn(self, next_player):
         pass
 
-    # Let the player place his sihps.
+    # Let the player place his ships.
     def place_ships(self):
         pass
 
@@ -50,7 +50,7 @@ class PlayerBase(object):
 
     # Check if the desired placement of a ship is valid.
     def check_placement(self, s, x, y, o):
-        # Check orientatoin of the sihp.
+        # Check orientation of the ship.
         if o == 0:
             # Ship horizontal.
             if x + s.size - 1 > 9:
@@ -84,4 +84,3 @@ class PlayerBase(object):
         self.player_id = num
         self.own_board = self.tracking_board = None
         self.ships = []
-

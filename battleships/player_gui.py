@@ -14,12 +14,13 @@
 
 import player_base
 import board_gui
+import ship_gui
 
 import pygame
 
 
 # Object class.
-def PlayerGui(player_base.PlayerBase):
+class PlayerGui(player_base.PlayerBase):
 
     # Override the get-target function.
     def get_target(self, next_player):
@@ -31,7 +32,7 @@ def PlayerGui(player_base.PlayerBase):
             self.tracking_board.draw(396, 21)
 
             mouse_pos = pygame.mouse.get_pos()
-            board_pos = gui_board.get_coord(396, 21, mouse_pos[0], mouse_pos[1])
+            board_pos = board_gui.get_coord(396, 21, mouse_pos[0], mouse_pos[1])
             if board_pos is not None:
                 x = board_pos[0]
                 y = board_pos[1]
@@ -91,7 +92,7 @@ def PlayerGui(player_base.PlayerBase):
                 self.own_board.draw(215, 20)
 
                 mouse_pos = pygame.mouse.get_pos()
-                board_pos = gui_board.get_coord(215, 20, mouse_pos[0], mouse_pos[1])
+                board_pos = board_gui.get_coord(215, 20, mouse_pos[0], mouse_pos[1])
                 if board_pos is not None:
                     x = board_pos[0]
                     y = board_pos[1]
@@ -138,6 +139,14 @@ def PlayerGui(player_base.PlayerBase):
 
     # Object creation method.
     def __init__(self, parent, num, ai=False):
-        self.parent = parent;
+        self.parent = parent
         super().__init__(num, ai)
-
+        self.own_board = board_gui.BoardGUI(self.parent)
+        self.tracking_board = board_gui.BoardGUI(self.parent)
+        self.ships = [
+                ship_gui.ShipGUI(5, 'Aircraft Carrier', self),
+                ship_gui.ShipGUI(4, 'Battleship', self),
+                ship_gui.ShipGUI(3, 'Cruiser', self),
+                ship_gui.ShipGUI(3, 'Submarine', self),
+                ship_gui.ShipGUI(2, 'Destroyer', self)
+                ]
