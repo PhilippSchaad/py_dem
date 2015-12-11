@@ -13,7 +13,7 @@
 # ------------------------------------------- #
 
 import player_cons
-import ai
+import ai_cons
 import util
 
 
@@ -77,7 +77,7 @@ class ConsoleApplication:
         if self.n_players == 1:
             self.players = [
                 player_cons.PlayerCons(1),
-                ai.AI(2)
+                ai_cons.AICons(2)
             ]
         else:
             self.players = [

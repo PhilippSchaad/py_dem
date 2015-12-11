@@ -1,5 +1,5 @@
 # ------------------------------------------- #
-# File: ai.py                                 #
+# File: ai_base.py                            #
 # Brief: AI-Module of the battleships-app.    #
 # Author: Philipp Schaad                      #
 # Creation Date: 201115                       #
@@ -12,7 +12,7 @@
 # LICENSE.txt file for more information.      #
 # ------------------------------------------- #
 
-import player
+import player_base
 import board
 
 import random
@@ -21,10 +21,10 @@ from time import sleep
 
 
 # Artificial intelligence class.
-class AI(player.Player):
+class AI(player_base.PlayerBase):
 
     # Let the AI take a shot.
-    def get_target(self, next_player):
+    def get_target(self):
         if len(self.history) == 1:
             # Only one hit so far. Do clockwise continuation method.
             h_pos = self.history[-1]
@@ -130,44 +130,10 @@ class AI(player.Player):
 
     # Let the AI take a turn.
     def take_turn(self, next_player):
-        print("\nThe computer is taking a shot...\n")
-        x, y = self.get_target(next_player)
-        sleep(1)
-        # Print out the chosen target. (Looks it up in the columns lookup table)
-        for i, j in board.cols.items():
-            if x == j:
-                print("\nThe computer shoots at", i, y)
-                break
-
-        # Check if the shot results in a hit or not.
-        for s in next_player.ships:
-            if s.intercept(x, y):
-                # We got a hit with ship s.
-                print("This is a hit!")
-                # Mark it on the tracking board.
-                self.tracking_board.coord[x][y] = \
-                    next_player.own_board.coord[x][y] = 2
-                # Add damage to the ship.
-                if s.add_damage():
-                    # If the ship got sunk:
-                    # Clear the history and mark the perimeter.
-                    self.history = []
-                    self.mark_perimeter(s)
-                else:
-                    # Otherwise, extend the history.
-                    self.history.append((x, y))
-                sleep(1)
-                return
-        # If we fall through to here, we got a miss.
-        print("This is a miss...")
-        self.tracking_board.coord[x][y] = \
-            next_player.own_board.coord[x][y] = 3
-        sleep(1)
+        pass
 
     # Let the AI place it's ships.
     def place_ships(self):
-        if self.is_console:
-            print("\nThe computer is placing ships...\n")
         for s in self.ships:
             while True:
                 x = random.randint(0, 9)
@@ -193,13 +159,11 @@ class AI(player.Player):
                           file=sys.stderr)
                     exit()
         sleep(1)
-        if self.is_console:
-            print("\nThe computer finished placing his ships.\n")
-        sleep(1)
 
     # Object creation method.
-    def __init__(self, p_num, console=True):
+    def __init__(self, p_num):
         super(AI, self).__init__(p_num, True)
+        self.own_board = board.Board()
+        self.tracking_board = board.Board()
         random.seed()
         self.history = []
-        self.is_console = console

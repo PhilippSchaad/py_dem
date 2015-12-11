@@ -1,6 +1,6 @@
 # ------------------------------------------- #
-# File: ship.py                               #
-# Brief: Ship object file.                    #
+# File: ship_base.py                          #
+# Brief: Ship base object file.               #
 # Author: Philipp Schaad                      #
 # Creation Date: 191115                       #
 # ------------------------------------------- #
@@ -42,8 +42,6 @@ class Ship:
     def add_damage(self):
         self.lives -= 1
         if self.lives <= 0:
-            print("Player ", self.owner.player_id, "'s ",
-                  self.name, " has been sunk!", sep="")
             return True
         return False
 

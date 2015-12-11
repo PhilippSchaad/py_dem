@@ -13,8 +13,10 @@
 # ------------------------------------------- #
 
 import player_base
-import board_base
-import ship
+import board
+import ship_cons
+
+import sys
 
 
 # Player-Console-Class.
@@ -49,7 +51,7 @@ class PlayerCons(player_base.PlayerBase):
                 if len(arg_in) == 3:
                     # Check first argument validity.
                     try:
-                        x = board_base.col_lookup(arg_in[0])
+                        x = board.col_lookup(arg_in[0])
                     except ValueError:
                         print("Please enter a valid column!")
                         continue
@@ -199,14 +201,12 @@ class PlayerCons(player_base.PlayerBase):
     # Object creation method.
     def __init__(self, num, ai=False):
         super().__init__(num, ai)
-        self.own_board = board_base.Board()
-        self.tracking_board = board_base.Board()
-        # TODO: temporary.
+        self.own_board = board.Board()
+        self.tracking_board = board.Board()
         self.ships = [
-                ship.Ship(5, 'Aircraft Carrier', self),
-                ship.Ship(4, 'Battleship', self),
-                ship.Ship(3, 'Cruiser', self),
-                ship.Ship(3, 'Submarine', self),
-                ship.Ship(2, 'Destroyer', self)
+                ship_cons.ShipCons(5, 'Aircraft Carrier', self),
+                ship_cons.ShipCons(4, 'Battleship', self),
+                ship_cons.ShipCons(3, 'Cruiser', self),
+                ship_cons.ShipCons(3, 'Submarine', self),
+                ship_cons.ShipCons(2, 'Destroyer', self)
                 ]
-
