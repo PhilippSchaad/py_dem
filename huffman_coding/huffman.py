@@ -26,9 +26,10 @@ class HuffmanCoder(object):
 
     # Create the huffman-encoding table.
     def _create_encoding_table(self):
+        total_char_count = 1
         char_counter = Counter(self._input_string)
         for c in self._input_string:
-            self._total_char_count += 1
+            total_char_count += 1
             if c not in self._occurrence_dict.keys():
                 self._occurrence_dict[c] = char_counter[c]
 
@@ -39,7 +40,8 @@ class HuffmanCoder(object):
             t_bottom.append(_Node(self._occurrence_dict[k], {k}))
         levels.append(t_bottom)
 
-        for i in range(5000):
+        i = 0
+        while True:
             if len(levels[i]) < 2:
                 break
             n_level = []
@@ -69,9 +71,10 @@ class HuffmanCoder(object):
             n_level.append(_Node(n_weight, n_char_set,
                                  n_l_child, n_r_child))
             levels.append(n_level)
+            i += 1
 
         tree.root = levels[-1][0]
-        if tree.root.weight != self._total_char_count:
+        if tree.root.weight != total_char_count:
             print("Oops! An error has occurred..")
             print("Your file has not been properly encoded.")
             print("Please check the file and try again..")
@@ -91,22 +94,25 @@ class HuffmanCoder(object):
             self._encoding_table[c] = encoding
             self._decoding_table[encoding] = c
 
+    # Writes a given encoding to the buffer and appends it to the output.
+    def _write_to_buffer(self, code, buffer, length):
+        for bit in list(code):
+            if bit == '1':
+                buffer = (buffer << 1) | 0x01
+            else:
+                buffer <<= 1
+            length += 1
+            if length == 8:
+                self._output_array.append(buffer)
+                buffer = length = 0
+        return buffer, length
+
     # Do the encoding.
     def _encode(self):
-        code_length = buffer = length = 0
+        buffer = length = 0
         for c in self._input_string:
-            code = self._encoding_table[c]
-            for bit in list(code):
-                if bit == '1':
-                    buffer = (buffer << 1) | 0x01
-                else:
-                    buffer <<= 1
-                length += 1
-                if length == 8:
-                    self._output_array.append(buffer)
-                    buffer = length = 0
-            code_length += len(code)
-
+            buffer, length = self._write_to_buffer(self._encoding_table[c], buffer, length)
+        buffer, length = self._write_to_buffer(self._encoding_table['EOF'], buffer, length)
         if length != 0:
             self._output_array.append(buffer << (8 - length))
 
@@ -120,8 +126,11 @@ class HuffmanCoder(object):
                 else:
                     buffer += '0'
                 if buffer in self._decoding_table.keys():
-                    self._output_array.append(self._decoding_table[buffer])
-                    buffer = ''
+                    if self._decoding_table[buffer] == 'EOF':
+                        return
+                    else:
+                        self._output_array.append(self._decoding_table[buffer])
+                        buffer = ''
 
     # Write the decoded sequence to the file.
     def _write_text_file(self):
@@ -143,9 +152,8 @@ class HuffmanCoder(object):
         with open(self._input_file_name, 'rb') as input_file:
             self._decoding_table, self._input_string = marshal.load(input_file)
 
-    # Do the encoding.
+    # Do the encoding of a file. Publicly visible interface method.
     def encode(self, filename, output_filename):
-        self._total_char_count = 1
         self._occurrence_dict = {'EOF': 1}
         self._input_string = ''
         self._encoding_table = {}
@@ -154,14 +162,14 @@ class HuffmanCoder(object):
         self._input_file_name = filename
         self._output_file_name = output_filename
 
-        self._read_text_file()
+        with open(filename, 'r') as file:
+            self._input_string = file.read()
         self._create_encoding_table()
         self._encode()
         self._write_huff_file()
 
-    # Do the decoding of a file.
+    # Do the decoding of a file. Publicly visible interface method.
     def decode(self, filename, output_filename):
-        self._total_char_count = 0
         self._occurrence_dict = {}
         self._input_string = ''
         self._encoding_table = {}
@@ -176,11 +184,8 @@ class HuffmanCoder(object):
 
     # Object creation procedure.
     def __init__(self):
-        self._total_char_count = 1
-        self._occurrence_dict = {'EOF': 1}
+        self._occurrence_dict = self._encoding_table = self._decoding_table = {}
         self._input_string = self._input_file_name = self._output_file_name = ''
-        self._encoding_table = {}
-        self._decoding_table = {}
         self._output_array = []
 
 
