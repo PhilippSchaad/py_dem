@@ -1,5 +1,4 @@
 # Ignore the compilation output. (Binary)
-/huffman_coding/input.txt
 /huffman_coding/output.txt
 /huffman_coding/test.huff
 /battleships/build
